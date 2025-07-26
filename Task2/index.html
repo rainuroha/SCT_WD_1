@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Stopwatch Web App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #121212;
+      color: #ffffff;
+      text-align: center;
+      padding: 50px;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 20px;
+    }
+
+    .timer {
+      font-size: 4rem;
+      margin-bottom: 20px;
+    }
+
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .lap-times {
+      margin-top: 30px;
+      text-align: left;
+      display: inline-block;
+    }
+
+    .lap-item {
+      font-size: 1.2rem;
+      margin: 5px 0;
+    }
+
+    .start { background-color: #4CAF50; }
+    .pause { background-color: #f39c12; }
+    .reset { background-color: #e74c3c; }
+    .lap { background-color: #3498db; }
+  </style>
+</head>
+<body>
+  <h1>Stopwatch</h1>
+  <div class="timer" id="display">00:00:00</div>
+
+  <button class="start" onclick="startTimer()">Start</button>
+  <button class="pause" onclick="pauseTimer()">Pause</button>
+  <button class="reset" onclick="resetTimer()">Reset</button>
+  <button class="lap" onclick="recordLap()">Lap</button>
+
+  <div class="lap-times" id="laps"></div>
+
+  <script>
+    let startTime, elapsedTime = 0;
+    let timerInterval;
+    let isRunning = false;
+
+    function formatTime(ms) {
+      const totalSeconds = Math.floor(ms / 1000);
+      const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
+      const seconds = String(totalSeconds % 60).padStart(2, '0');
+      const milliseconds = String(Math.floor((ms % 1000) / 10)).padStart(2, '0');
+      return `${minutes}:${seconds}:${milliseconds}`;
+    }
+
+    function startTimer() {
+      if (isRunning) return;
+      isRunning = true;
+      startTime = Date.now() - elapsedTime;
+      timerInterval = setInterval(() => {
+        elapsedTime = Date.now() - startTime;
+        document.getElementById("display").textContent = formatTime(elapsedTime);
+      }, 10);
+    }
+
+    function pauseTimer() {
+      clearInterval(timerInterval);
+      isRunning = false;
+    }
+
+    function resetTimer() {
+      clearInterval(timerInterval);
+      elapsedTime = 0;
+      isRunning = false;
+      document.getElementById("display").textContent = "00:00:00";
+      document.getElementById("laps").innerHTML = "";
+    }
+
+    function recordLap() {
+      if (!isRunning) return;
+      const lapTime = formatTime(elapsedTime);
+      const lapItem = document.createElement("div");
+      lapItem.className = "lap-item";
+      lapItem.textContent = `Lap: ${lapTime}`;
+      document.getElementById("laps").appendChild(lapItem);
+    }
+  </script>
+</body>
+</html>
